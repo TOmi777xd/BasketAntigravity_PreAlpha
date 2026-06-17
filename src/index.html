@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Street Basket V52 - Modular & Hardcore</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="gameWrapper" tabindex="0">
+        <canvas id="c"></canvas>
+
+        <!-- 1. MENÚ PRINCIPAL -->
+        <div id="layerMain" class="layer" style="display: flex;">
+            <div id="coinDisplay">💰 <span id="coinVal">0</span></div>
+
+            <div style="margin-top: -300px; text-align: center; pointer-events: none;">
+                <h1>STREET HOOPS</h1>
+                <p>HARDCORE & SKILLS EDITION</p>
+            </div>
+            
+            <div style="position: absolute; bottom: 40px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                <div style="display: flex; gap: 20px;">
+                    <div class="btn" onclick="window.navTo('MODES')">JUGAR</div>
+                    <div class="btn" onclick="window.navTo('CUSTOM')">TIENDA</div>
+                </div>
+                <div id="btnMainControl" class="btn setting-btn" onclick="window.toggleMode()">CONTROLES: PC</div>
+            </div>
+        </div>
+
+        <!-- 2. SELECTOR DE MODOS -->
+        <div id="layerModes" class="layer overlay-bg" style="display: none;">
+            <h1>MODOS</h1>
+            <div class="btn" onclick="window.startGame('FREE')">ENTRENAMIENTO</div>
+            <div class="btn" onclick="window.navTo('TUTORIAL_MENU')">ESCUELA</div>
+            <div class="btn btn-disabled">1 VS 1</div>
+            <div class="btn btn-disabled">TORNEO</div>
+            <div class="btn setting-btn" style="margin-top: 30px; border-color: #f44; color:#f44;" onclick="window.navTo('MAIN')">VOLVER</div>
+        </div>
+
+        <!-- 3. MENÚ TUTORIAL -->
+        <div id="layerTutorialMenu" class="layer overlay-bg" style="display: none;">
+            <h1>ESCUELA</h1>
+            <div class="btn" onclick="window.startGame('TUTORIAL')">CLASE ATAQUE</div>
+            <div class="btn" onclick="window.startGame('DEFENSE')">CLASE DEFENSA</div>
+            <div class="btn btn-disabled">EXAMEN FINAL</div>
+            <div class="btn setting-btn" style="margin-top: 30px;" onclick="window.navTo('MODES')">ATRÁS</div>
+        </div>
+
+        <!-- 4. PERSONALIZACIÓN -->
+        <div id="layerCustom" class="layer overlay-bg" style="display: none;">
+            <h2>PERSONALIZAR</h2>
+            <div class="tab-container">
+                <div id="tabRopa" class="tab-btn active" onclick="window.switchTab('ROPA')">ESTILO</div>
+                <div id="tabStats" class="tab-btn" onclick="window.switchTab('MEJORAS')">MEJORAS</div>
+                <div id="tabSkills" class="tab-btn" onclick="window.switchTab('HABILIDADES')">HABILIDADES</div>
+                <div id="tabCtrls" class="tab-btn" onclick="window.switchTab('CONTROLES')">OPCIONES</div>
+            </div>
+            
+            <div class="custom-container">
+                
+                <!-- ROPA -->
+                <div id="sectRopa" class="custom-section active">
+                    <div class="subtab-container">
+                        <div id="subHead" class="subtab-btn active" onclick="window.switchSubTab('HEAD')">CABEZA</div>
+                        <div id="subBody" class="subtab-btn" onclick="window.switchSubTab('BODY')">CUERPO</div>
+                        <div id="subGear" class="subtab-btn" onclick="window.switchSubTab('GEAR')">EQUIPO</div>
+                        <div id="subBall" class="subtab-btn" onclick="window.switchSubTab('BALL')">BALÓN</div>
+                    </div>
+                    
+                    <div id="grpHead" style="width:100%;">
+                        <div class="color-row"><span>PEINADO</span><select id="selHair" onchange="window.saveCustom()"><option value="bald">RAPADO</option><option value="short">CORTO</option><option value="afro">AFRO</option><option value="spiky">CRESTA</option><option value="long">LARGO</option></select></div>
+                        <div class="color-row"><span>COLOR PELO</span><input type="color" id="colHair" onchange="window.saveCustom()"></div>
+                    </div>
+                    
+                    <div id="grpBody" style="width:100%; display:none;">
+                        <div class="color-row">
+                            <span>TATUAJES</span>
+                            <div style="display:flex; align-items:center;">
+                                <select id="selTattoo" onchange="window.checkUnlock('tattoo')">
+                                    <option value="none">NINGUNO</option>
+                                    <option value="tribal">TRIBALES (30€)</option>
+                                    <option value="fire">LLAMAS (50€)</option>
+                                    <option value="skull">CALAVERA (80€)</option>
+                                </select>
+                                <button id="btnBuyTattoo" class="buy-btn" style="display:none;" onclick="window.buyItem('tattoo')">OK</button>
+                            </div>
+                        </div>
+                        <div class="color-row"><span>DISEÑO CAMISA</span><div style="display:flex; align-items:center;"><select id="selShirtDesign" onchange="window.checkUnlock('shirt')"><option value="basic">BÁSICA</option><option value="stripe">RAYAS (10€)</option><option value="number">DORSAL (10€)</option></select><button id="btnBuyShirt" class="buy-btn" style="display:none;" onclick="window.buyItem('shirt')">OK</button></div></div>
+                        <div class="color-row"><span>COLOR CAMISA</span> <input type="color" id="colShirt" onchange="window.saveCustom()"></div>
+                        <div class="color-row"><span>COLOR PANTALÓN</span> <input type="color" id="colPants" onchange="window.saveCustom()"></div>
+                    </div>
+
+                    <div id="grpGear" style="width:100%; display:none;">
+                        <div class="color-row"><span>CALZADO</span><div style="display:flex; align-items:center;"><select id="selShoeType" onchange="window.checkUnlock('shoe')"><option value="chanclas">CHANCLAS</option><option value="sneakers">DEPORTIVAS</option></select><button id="btnBuyShoe" class="buy-btn" style="display:none;" onclick="window.buyItem('shoe')">20€</button></div></div>
+                        <div class="color-row"><span>COLOR CALZADO</span> <input type="color" id="colShoes" onchange="window.saveCustom()"></div>
+                        <div class="color-row"><span>GUANTES</span><div style="display:flex; align-items:center;"><input type="checkbox" id="checkGloves" onchange="window.checkUnlock('glove')"><button id="btnBuyGlove" class="buy-btn" style="display:none;" onclick="window.buyItem('glove')">20€</button></div></div>
+                        <div class="color-row"><span>COLOR GUANTES</span> <input type="color" id="colGloves" onchange="window.saveCustom()"></div>
+                    </div>
+
+                    <div id="grpBall" style="width:100%; display:none;">
+                        <div class="color-row">
+                            <span>TIPO DE BALÓN</span>
+                            <div style="display:flex; align-items:center;">
+                                <select id="selBallType" onchange="window.checkUnlock('ball')">
+                                    <option value="classic">CLÁSICO</option>
+                                    <option value="aba">ABA (40€)</option>
+                                    <option value="street">CALLEJERO (60€)</option>
+                                    <option value="fire">FUEGO (100€)</option>
+                                </select>
+                                <button id="btnBuyBall" class="buy-btn" style="display:none;" onclick="window.buyItem('ball')">OK</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- MEJORAS -->
+                <div id="sectMejoras" class="custom-section">
+                    <div style="color: gold; font-size: 1.5rem; margin-bottom: 10px;">SALDO: <span id="coinValShop">0</span></div>
+                    <div class="upgrade-row"><div class="stat-name">TIRO</div><div class="stat-bar"><div id="barShot" class="stat-fill"></div></div><div id="txtShot" style="color:#aaa; width: 40px;">x0.7</div><button id="btnBuyShot" class="upgrade-btn" onclick="window.buyUpgrade('uShot')">10€</button></div>
+                    <div class="upgrade-row"><div class="stat-name">CONTROL</div><div class="stat-bar"><div id="barControl" class="stat-fill"></div></div><div id="txtControl" style="color:#aaa; width: 40px;">x0.7</div><button id="btnBuyControl" class="upgrade-btn" onclick="window.buyUpgrade('uControl')">10€</button></div>
+                    <div class="upgrade-row"><div class="stat-name">SALTO</div><div class="stat-bar"><div id="barJump" class="stat-fill"></div></div><div id="txtJump" style="color:#aaa; width: 40px;">x0.7</div><button id="btnBuyJump" class="upgrade-btn" onclick="window.buyUpgrade('uJump')">10€</button></div>
+                </div>
+
+                <!-- HABILIDADES -->
+                <div id="sectHabilidades" class="custom-section">
+                    <div style="color: gold; font-size: 1.5rem; margin-bottom: 10px;">SALDO: <span id="coinValSkill">0</span></div>
+                    
+                    <div class="upgrade-row">
+                        <div class="stat-name" style="width: 120px;">DOBLE SALTO</div>
+                        <button id="btnBuyDJump" class="buy-btn" onclick="window.buySkill('double_jump')" style="padding:5px 15px;">10M €</button>
+                        <button id="btnEqDJump" class="upgrade-btn" style="display:none;" onclick="window.equipSkill('double_jump')">EQUIPAR</button>
+                    </div>
+                    
+                    <div class="upgrade-row">
+                        <div class="stat-name" style="width: 120px;">AUTO-REBOTE</div>
+                        <button id="btnBuyARebound" class="buy-btn" onclick="window.buySkill('auto_rebound')" style="padding:5px 15px;">20M €</button>
+                        <button id="btnEqARebound" class="upgrade-btn" style="display:none;" onclick="window.equipSkill('auto_rebound')">EQUIPAR</button>
+                    </div>
+                    
+                    <div class="upgrade-row">
+                        <div class="stat-name" style="width: 120px;">SUPER DUNK</div>
+                        <button id="btnBuySDunk" class="buy-btn" onclick="window.buySkill('super_dunk')" style="padding:5px 15px;">50M €</button>
+                        <button id="btnEqSDunk" class="upgrade-btn" style="display:none;" onclick="window.equipSkill('super_dunk')">EQUIPAR</button>
+                    </div>
+                    
+                    <div class="upgrade-row" style="margin-top: 20px; background: transparent; justify-content: center;">
+                        <button id="btnEqNone" class="upgrade-btn" onclick="window.equipSkill('none')" style="width: 200px;">DESEQUIPAR HABILIDAD</button>
+                    </div>
+                </div>
+
+                <!-- CONTROLES -->
+                <div id="sectControles" class="custom-section">
+                    <h2 style="font-size: 2rem; border-bottom: 1px solid #444; margin-bottom: 20px;">TIPO DE CONTROL</h2>
+                    <div style="display:flex; gap: 20px; margin-bottom: 30px;">
+                        <div id="btnSetPCCustom" class="btn setting-btn" onclick="window.setMode('pc')">PC</div>
+                        <div id="btnSetMobileCustom" class="btn setting-btn" onclick="window.setMode('mobile')">MÓVIL</div>
+                    </div>
+                    <h2 style="font-size: 2rem; border-bottom: 1px solid #444; margin-bottom: 20px;">OPCIONES</h2>
+                    <div class="color-row"><span style="font-size: 1.5rem;">ESPRINTAR DOBLE TOQUE</span><input type="checkbox" id="checkDoubleTap" style="width: 30px; height: 30px;" onchange="window.saveCustom()"></div>
+                </div>
+            </div>
+            <div class="btn setting-btn" style="margin-top: 15px; border-color: #0f0; color:#0f0; width: 100%;" onclick="window.navTo('MAIN')">GUARDAR Y SALIR</div>
+        </div>
+
+        <!-- JUEGO UI -->
+        <div id="layerGameUI" class="layer" style="display: none; justify-content: space-between; pointer-events: none;">
+            <div id="topBar">
+                <div id="scoreBoard">PTS: 0</div>
+                <div id="btnGear" onclick="window.navTo('PAUSE')">⚙️</div>
+            </div>
+            <div id="touchControls">
+                <div class="controls-left">
+                    <div class="t-btn" id="btnL">◀</div>
+                    <div class="t-btn" id="btnR">▶</div>
+                    <div class="t-btn" id="btnSprint">⚡</div>
+                </div>
+                <div class="controls-right">
+                    <div class="t-btn" id="btnSteal">🖐️</div>
+                    <div class="t-btn" id="btnJ" style="width:70px; height:70px; border-color:cyan;">🡅</div>
+                    <div class="t-btn" id="btnS" style="width:95px; height:95px; border-color:orange; font-size:40px;">🏀</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAUSA -->
+        <div id="layerPause" class="layer overlay-bg" style="display: none;">
+            <h1>PAUSA</h1>
+            <div style="display:flex; margin-bottom: 20px;">
+                <div id="btnSetPCPause" class="btn setting-btn" onclick="window.setMode('pc')">PC</div>
+                <div id="btnSetMobilePause" class="btn setting-btn" onclick="window.setMode('mobile')">MÓVIL</div>
+            </div>
+            <div class="btn" style="border-color: #0f0; color:#0f0;" onclick="window.resumeGame()">REANUDAR</div>
+            <div class="btn" style="border-color: #f00; color:#f00;" onclick="window.quitGame()">SALIR AL MENÚ</div>
+        </div>
+    </div>
+    <script src="js/globals.js"></script>
+    <script src="js/persistence.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/game/mechanics.js"></script>
+    <script src="js/game/physics.js"></script>
+    <script src="js/game/render.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
