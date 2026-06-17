@@ -22,6 +22,7 @@ function update() {
             globalFrame++;
             if (player.jumpCooldown > 0) player.jumpCooldown--;
             if (player.stealCooldown > 0) player.stealCooldown--;
+            if (player.dribbleCooldown > 0) player.dribbleCooldown--;
 
             // TUTORIAL
             if (gameMode === 'TUTORIAL') {
@@ -123,11 +124,8 @@ function update() {
 
                 var actualMovement = false;
                 
-                if (input.steal && ball.held && player.y >= 410 && isMoving && player.stealCooldown <= 0) {
-                    player.vx = moveDir * -12; // Stepback / Crossover
-                    player.stealCooldown = 30;
-                    addPopup("¡STEPBACK!", "#ff0");
-                    spawnParticles(player.x + 25, 410 + player.h, 15, "rgba(200,200,200,0.8)", 6);
+                if (input.steal && gameMode !== 'DEFENSE') {
+                    window.executeDribbleMove(moveDir || 1, isMoving);
                 }
                 
                 if (isMoving) {
@@ -211,8 +209,8 @@ function update() {
                         var distHoopY = Math.abs(player.y - hoop.y);
                         if (player.x + player.w > hoop.x + 25 && player.y < hoop.y + 20 && player.y > hoop.y - 150) {
                             addPopup("BOARD DUNK!", "#aaf"); triggerAutoDunk();
-                        } else if (distHoopX < 40 && distHoopY < 60) {
-                            if (player.y < hoop.y - 10) {
+                        } else if (distHoopX < 40 && distHoopY < 80) {
+                            if (player.y < hoop.y - 10 || distHoopX <= 15) {
                                 triggerAutoDunk(); 
                             } else if (gameData.activeSkill === 'super_dunk') {
                                 triggerAutoDunk(); 

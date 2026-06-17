@@ -7,6 +7,50 @@ function getGreenZone() {
             return { min: center - width, max: center + width, w: width * 2 };
         }
 
+        window.executeDribbleMove = function(moveDir, isMoving) {
+            if (player.dribbleCooldown > 0 || !ball.held) return;
+            if (player.stamina < 5) return; 
+
+            if (player.isCharging) {
+                player.isCharging = false; player.charge = 0; player.dribbleCooldown = 15; player.stamina -= 8;
+                addPopup("B.T. LEGS!", "magenta");
+                spawnParticles(player.x + 25, player.y + 45, 10, "rgba(255,0,255,0.6)", 4);
+                return;
+            }
+
+            if (player.playerState === 'JUMP') {
+                player.vx = -player.vx * 1.3; player.dribbleCooldown = 20; player.stamina -= 12;
+                player.dribbleVisualFlip = true; setTimeout(function(){ player.dribbleVisualFlip = false; }, 200);
+                addPopup("BEHIND BACK!", "#0cf");
+                spawnParticles(player.x + 25, player.y + 45, 15, "rgba(0,200,255,0.8)", 5);
+                return;
+            }
+
+            if (player.y >= 410) {
+                if (!isMoving) {
+                    player.dribbleCooldown = 20; player.stamina -= 5;
+                    addPopup("HESI", "#fff");
+                    spawnParticles(player.x + 25, 410 + player.h, 5, "rgba(200,200,200,0.5)", 2);
+                } else {
+                    if (doubleSprintActive) {
+                        player.vx = moveDir * 16; player.dribbleCooldown = 40; player.stamina -= 20; player.dribbleSpinTimer = 20; 
+                        addPopup("¡SPIN MOVE!", "#f60"); shake = 3;
+                        spawnParticles(player.x + 25, 410 + player.h, 20, "rgba(255,100,0,0.8)", 8);
+                    } else if (player.isSprinting) {
+                        player.vx = moveDir * -14; player.dribbleCooldown = 30; player.stamina -= 15;
+                        addPopup("¡STEPBACK!", "#ff0"); shake = 2;
+                        spawnParticles(player.x + 25, 410 + player.h, 15, "rgba(200,200,200,0.8)", 6);
+                    } else {
+                        var pushDir = (player.vx > 0) ? -1 : 1;
+                        if (player.vx === 0) pushDir = moveDir * -1;
+                        player.vx = pushDir * 10; player.dribbleCooldown = 25; player.stamina -= 10;
+                        addPopup("CROSSOVER!", "#0ff");
+                        spawnParticles(player.x + 25, 410 + player.h, 10, "rgba(0,255,255,0.6)", 5);
+                    }
+                }
+            }
+        };
+
         function checkShot() { shootJumpShot(); }
 
         function triggerAutoDunk() {

@@ -63,7 +63,8 @@ var player = {
     stamina: 120, maxStamina: 120, isSprinting: false,
     shotFollowThroughTimer: 0, playerState: 'IDLE', koTimer: 0, swingAngle: 0,
     multShot: 0.7, multControl: 0.7, multJump: 0.7,
-    stealCooldown: 0, hangFrames: 0,
+    stealCooldown: 0, hangFrames: 0, dribbleCooldown: 0,
+    dribbleSpinTimer: 0, dribbleVisualFlip: false,
     
     // JUMP LOGIC
     holdingJump: false,
